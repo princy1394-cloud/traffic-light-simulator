@@ -42,7 +42,7 @@ Select **Start** and watch the phase label, countdown, and signal lamps. North/s
 
 ## How arrays are used
 
-`DIRECTIONS`, `signalStates`, `vehiclesByDirection`, `waitingVehicles`, `vehiclesPassed`, and `trafficDensity` use matching direction indices: 0 = north, 1 = east, 2 = south, and 3 = west. `vehiclesByDirection[index]` stores the actual vehicle objects; the other indexed arrays track signal, queue, completed traffic, and density. The inspector renders these state arrays rather than sample values.
+Think of the direction arrays as four matching slots: 0 = north, 1 = east, 2 = south, and 3 = west. Slot 0 in `signalStates`, `vehiclesByDirection`, `waitingVehicles`, and `vehiclesPassed` always describes NORTH. When a signal phase changes, one loop checks those slots and gives green only to the permitted directions. This is a good fit because the four approaches share the same information and rules; one loop can manage them consistently instead of repeating separate code for each direction. The vehicle queues hold actual vehicle objects, while the inspector reads live state rather than sample values.
 
 This fixed four-direction model is a good fit for indexed arrays: a single loop can update the signal state or calculate the queue data for each approach using the same index. For example, `signalStates[direction]` is set by checking whether that index is in the active phase's green list. The vehicle queues themselves are arrays of objects because each vehicle needs related fields such as position, speed, and wait time.
 

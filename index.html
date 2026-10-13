@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3f1eb">
+    <title>SIGNAL — Urban traffic simulation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="SIGNAL home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong>SIGNAL</strong><small>URBAN TRAFFIC SIMULATION</small></span>
+      </a>
+      <div class="topbar-status">
+        <span class="status-indicator" id="status-indicator"></span>
+        <span id="simulation-status" aria-live="polite">READY</span>
+      </div>
+      <div class="clock-block">
+        <span class="eyebrow">SIMULATION TIME</span>
+        <time class="mono" id="simulation-clock">00:00</time>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro-row" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">CITY MOBILITY LAB <span class="eyebrow-rule"></span> MODEL 04—01</p>
+          <h1 id="page-title">Intersection <em>study</em></h1>
+        </div>
+        <p class="intro-note">A four-way signal model exploring how coordinated phases shape the flow of an urban junction.</p>
+      </section>
+
+      <section class="workspace" aria-label="Traffic simulation workspace">
+        <div class="visual-column">
+          <div class="section-heading">
+            <div><span class="section-index">01</span><h2>Live intersection</h2></div>
+            <span class="live-label"><span></span> LIVE MODEL</span>
+          </div>
+
+          <div class="intersection-frame">
+            <svg id="intersection" class="intersection" viewBox="0 0 900 600" role="img" aria-labelledby="intersection-title intersection-description">
+              <title id="intersection-title">Top-down view of a four-way traffic intersection</title>
+              <desc id="intersection-description">Vehicles queue on four approaches and proceed straight through when their signal is green.</desc>
+              <defs>
+                <pattern id="asphalt-grain" width="24" height="24" patternUnits="userSpaceOnUse">
+                  <circle cx="3" cy="5" r=".65" fill="#ffffff" opacity=".13"/>
+                  <circle cx="16" cy="14" r=".55" fill="#0b0d0d" opacity=".2"/>
+                  <circle cx="8" cy="21" r=".4" fill="#ffffff" opacity=".1"/>
+                </pattern>
+                <pattern id="walk-stripes" width="13" height="13" patternUnits="userSpaceOnUse">
+                  <rect width="6" height="13" fill="#e9e7dc"/>
+                </pattern>
+                <g id="vehicle-shape">
+                  <rect class="vehicle-shadow" x="-11" y="-19" width="22" height="39" rx="5"/>
+                  <path class="vehicle-body" d="M-8-17 Q-8-19 -5-19 H5 Q8-19 8-17 L10-7 V13 Q10 18 6 19 H-6 Q-10 18 -10 13 V-7 Z"/>
+                  <path class="vehicle-window" d="M-7-7 Q-6-10 -3-10 H3 Q6-10 7-7 V1 H-7 Z"/>
+                  <path class="vehicle-glass" d="M-7 4 H7 V11 H-7 Z"/>
+                  <path class="vehicle-detail" d="M-8-12 H-5 M5-12 H8 M-7 14 H7"/>
+                  <circle class="vehicle-light" cx="-7" cy="-15" r="1.1"/>
+                  <circle class="vehicle-light" cx="7" cy="-15" r="1.1"/>
+                </g>
+              </defs>
+
+              <rect width="900" height="600" fill="#e9e7df"/>
+              <path class="ground-line" d="M0 143H900M0 457H900M293 0V600M607 0V600"/>
+              <rect x="293" y="0" width="314" height="600" class="road-surface"/>
+              <rect x="0" y="143" width="900" height="314" class="road-surface"/>
+              <rect x="293" y="0" width="314" height="600" fill="url(#asphalt-grain)"/>
+              <rect x="0" y="143" width="900" height="314" fill="url(#asphalt-grain)"/>
+
+              <g class="road-details">
+                <path class="lane-dash" d="M450 0V132M450 468V600M0 300H282M618 300H900"/>
+                <path class="lane-guide" d="M375 0V132M525 0V132M375 468V600M525 468V600M0 225H282M0 375H282M618 225H900M618 375H900"/>
+                <rect class="crosswalk" x="308" y="150" width="63" height="42" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="529" y="150" width="63" height="42" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="308" y="408" width="63" height="42" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="529" y="408" width="63" height="42" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="0" y="158" width="42" height="63" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="0" y="379" width="42" height="63" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="858" y="158" width="42" height="63" fill="url(#walk-stripes)"/>
+                <rect class="crosswalk" x="858" y="379" width="42" height="63" fill="url(#walk-stripes)"/>
+                <path class="stop-line" d="M375 196H444M456 196H525M375 404H444M456 404H525M297 225V294M297 306V375M603 225V294M603 306V375"/>
+                <path class="turn-arrow" d="M387 81v34m0 0-8-9m8 9 8-9M513 81v34m0 0-8-9m8 9 8-9M72 237h34m0 0-9-8m9 8-9 8M794 363h34m0 0-9-8m9 8-9 8"/>
+              </g>
+
+              <g class="street-labels" aria-hidden="true">
+                <text x="450" y="27">NORTH APPROACH</text>
+                <text x="450" y="584">SOUTH APPROACH</text>
+                <text x="71" y="294">WEST APPROACH</text>
+                <text x="829" y="294">EAST APPROACH</text>
+              </g>
+
+              <g class="signal-unit" data-signal="0" transform="translate(330 177)">
+                <rect x="-8" y="-18" width="16" height="39" rx="4"/>
+                <circle class="lamp lamp-red" cx="0" cy="-10" r="4"/>
+                <circle class="lamp lamp-amber" cx="0" cy="0" r="4"/>
+                <circle class="lamp lamp-green" cx="0" cy="10" r="4"/>
+              </g>
+              <g class="signal-unit" data-signal="2" transform="translate(570 423)">
+                <rect x="-8" y="-18" width="16" height="39" rx="4"/>
+                <circle class="lamp lamp-red" cx="0" cy="-10" r="4"/>
+                <circle class="lamp lamp-amber" cx="0" cy="0" r="4"/>
+                <circle class="lamp lamp-green" cx="0" cy="10" r="4"/>
+              </g>
+              <g class="signal-unit" data-signal="1" transform="translate(585 177) rotate(90)">
+                <rect x="-8" y="-18" width="16" height="39" rx="4"/>
+                <circle class="lamp lamp-red" cx="0" cy="-10" r="4"/>
+                <circle class="lamp lamp-amber" cx="0" cy="0" r="4"/>
+                <circle class="lamp lamp-green" cx="0" cy="10" r="4"/>
+              </g>
+              <g class="signal-unit" data-signal="3" transform="translate(315 423) rotate(90)">
+                <rect x="-8" y="-18" width="16" height="39" rx="4"/>
+                <circle class="lamp lamp-red" cx="0" cy="-10" r="4"/>
+                <circle class="lamp lamp-amber" cx="0" cy="0" r="4"/>
+                <circle class="lamp lamp-green" cx="0" cy="10" r="4"/>
+              </g>
+              <g id="vehicle-layer" aria-hidden="true"></g>
+            </svg>
+            <div class="map-caption"><span>PLAN VIEW / NOT TO SCALE</span><span class="mono">JUNCTION 04—01</span></div>
+          </div>
+
+          <div class="signal-summary" aria-label="Current signal phases">
+            <div class="phase-readout">
+              <span class="eyebrow">ACTIVE MOVEMENT</span>
+              <strong id="active-movement">—</strong>
+            </div>
+            <div class="phase-readout">
+              <span class="eyebrow">PHASE REMAINING</span>
+              <strong class="mono"><span id="phase-remaining">—</span><small> SEC</small></strong>
+            </div>
+            <div class="phase-readout phase-note">
+              <span class="phase-swatch"></span>
+              <span>Opposing straight-through movements share green. Conflicting approaches remain red.</span>
+            </div>
+          </div>
+
+          <section class="controls" aria-labelledby="controls-title">
+            <div class="section-heading compact-heading">
+              <div><span class="section-index">02</span><h2 id="controls-title">Simulation controls</h2></div>
+              <span class="mono control-state" id="control-state">STOPPED</span>
+            </div>
+            <div class="control-row">
+              <div class="button-group">
+                <button class="button button-primary" id="start-button" type="button"><span class="play-icon" aria-hidden="true"></span>Start</button>
+                <button class="button" id="pause-button" type="button" disabled>Pause</button>
+                <button class="button" id="resume-button" type="button" disabled>Resume</button>
+                <button class="button button-reset" id="reset-button" type="button">Reset</button>
+              </div>
+              <label class="speed-control" for="speed-select">
+                <span class="eyebrow">SIMULATION SPEED</span>
+                <select id="speed-select" aria-label="Simulation speed">
+                  <option value="0.5">0.5×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="2">2×</option>
+                  <option value="4">4×</option>
+                </select>
+              </label>
+            </div>
+            <div class="add-traffic-row">
+              <label for="direction-select" class="eyebrow">INJECT VEHICLE</label>
+              <select id="direction-select" aria-label="Direction to add traffic">
+                <option value="0">North approach</option>
+                <option value="1">East approach</option>
+                <option value="2">South approach</option>
+                <option value="3">West approach</option>
+              </select>
+              <button class="button button-add" id="add-vehicle-button" type="button">Add vehicle <span aria-hidden="true">+</span></button>
+              <span class="control-hint" id="add-vehicle-hint">Queue limit: 4 per approach</span>
+            </div>
+          </section>
+        </div>
+
+        <aside class="data-column" aria-label="Live traffic data">
+          <section class="overview-section" aria-labelledby="overview-title">
+            <div class="section-heading">
+              <div><span class="section-index">03</span><h2 id="overview-title">Traffic overview</h2></div>
+            </div>
+            <div class="overview-grid">
+              <div class="metric">
+                <span class="eyebrow">WAITING NOW</span>
+                <strong class="mono" id="total-waiting">0</strong>
+                <span class="metric-unit">vehicles in queue</span>
+              </div>
+              <div class="metric">
+                <span class="eyebrow">PASSED THROUGH</span>
+                <strong class="mono" id="total-passed">0</strong>
+                <span class="metric-unit">vehicles total</span>
+              </div>
+              <div class="metric metric-wide">
+                <span class="eyebrow">MEAN STOPPED TIME / CLEARED VEHICLES</span>
+                <strong class="mono" id="average-wait">—<small> SEC</small></strong>
+                <span class="metric-unit">recorded stopped time per completed vehicle</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="directions-section" aria-labelledby="directions-title">
+            <div class="section-heading">
+              <div><span class="section-index">04</span><h2 id="directions-title">Approaches</h2></div>
+              <span class="eyebrow">N / E / S / W</span>
+            </div>
+            <div class="direction-table" id="direction-table" aria-live="polite"></div>
+          </section>
+
+          <section class="arrays-section" aria-labelledby="arrays-title">
+            <div class="section-heading">
+              <div><span class="section-index">05</span><h2 id="arrays-title">Array inspector</h2></div>
+              <span class="inspector-live"><span></span> STATE LINKED</span>
+            </div>
+            <p class="array-intro">Each index refers to the same approach in the direction order shown below.</p>
+            <div class="index-key mono" aria-label="Array index to direction mapping">
+              <span><b>00</b> NORTH</span><span><b>01</b> EAST</span><span><b>02</b> SOUTH</span><span><b>03</b> WEST</span>
+            </div>
+            <div class="array-list" id="array-list" aria-live="polite"></div>
+            <p class="density-note"><span class="density-dot"></span> Density thresholds: LOW 0–1 · MEDIUM 2–3 · HIGH 4 waiting vehicles.</p>
+          </section>
+        </aside>
+      </section>
+
+      <footer class="page-footer">
+        <span>SIGNAL <span class="footer-separator">/</span> INTERSECTION RESEARCH SERIES</span>
+        <span>DETERMINISTIC ARRIVALS <span class="footer-separator">·</span> STRAIGHT-THROUGH TRAFFIC MODEL</span>
+      </footer>
+    </main>
+  </body>
+</html>

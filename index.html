@@ -33,6 +33,12 @@
         <p class="intro-note">A four-way signal model exploring how coordinated phases shape the flow of an urban junction.</p>
       </section>
 
+      <section class="array-explainer" aria-label="How arrays control traffic">
+        <h2>How arrays control traffic</h2>
+        <p>Think of each array as four matching slots: <b>0 North</b>, <b>1 East</b>, <b>2 South</b>, and <b>3 West</b>. Slot 0 always stores North's signal, queue, waiting count, and passed count.</p>
+        <p>When a light changes, the program checks these slots in a loop. It gives green only to the directions allowed in that phase, then updates their vehicle queues and counts. Arrays suit this junction because all four directions use the same information, so one set of rules can manage them consistently.</p>
+      </section>
+
       <section class="workspace" aria-label="Traffic simulation workspace">
         <div class="visual-column">
           <div class="section-heading">
@@ -216,11 +222,6 @@
             </div>
             <div class="array-list" id="array-list" aria-live="polite"></div>
             <p class="density-note"><span class="density-dot"></span> Density thresholds: LOW 0–1 · MEDIUM 2–3 · HIGH 4 waiting vehicles.</p>
-            <div class="array-explainer" aria-label="How arrays control traffic">
-              <h3>How arrays control traffic</h3>
-              <p>Think of each array as four matching slots: <b>0 North</b>, <b>1 East</b>, <b>2 South</b>, and <b>3 West</b>. Slot 0 always stores North's signal, queue, waiting count, and passed count.</p>
-              <p>When a light changes, the program checks these slots in a loop. It gives green only to the directions allowed in that phase, then updates their vehicle queues and counts. Arrays suit this junction because all four directions use the same information, so one set of rules can manage them consistently.</p>
-            </div>
           </section>
         </aside>
       </section>

@@ -50,6 +50,24 @@ For example, index `1` refers to EAST in every direction-indexed array: `signalS
 
 The inspector reads these program arrays directly. It also displays `queueLengths`, derived from the actual vehicle lists at render time. It does not use hardcoded example traffic values.
 
+### Why this array algorithm suits the scenario
+
+The number and order of approaches are fixed, and every approach has the same signal and traffic measurements. This makes parallel indexed arrays practical: one loop can apply a phase consistently to all four directions. The actual signal assignment is:
+
+```js
+for (let direction = 0; direction < DIRECTIONS.length; direction += 1) {
+  signalStates[direction] = phase.green.includes(direction)
+    ? phase.state
+    : SIGNAL.RED;
+}
+```
+
+The phase stores the indices that may proceed. For a north/south phase that list is `[0, 2]`; for an east/west phase it is `[1, 3]`. The loop assigns the active phase state only to those indices and makes the others red. This reduces duplicated direction-specific code and makes each approach's signal easy to compare with its queue and count.
+
+Queues need a variable number of individual vehicles, so SIGNAL uses a nested array: `vehiclesByDirection[direction]` is an array of vehicle objects. Objects are appropriate for a vehicle because position, speed, and stopped time describe one entity together. The outer array still gives the four approaches a stable index. Each update filters the relevant queue to calculate the waiting count and density; when a vehicle clears the junction, the program increments `vehiclesPassed[direction]`. This combines arrays and objects rather than forcing every kind of information into a flat array.
+
+The main trade-off is that parallel arrays rely on a consistent ordering. If a direction is inserted or reordered, every related array and phase index must follow the same change. In a larger system, named direction records or maps might reduce this synchronization risk. For this small fixed four-way example, the shared index order keeps the demonstration concise and makes the array relationship visible in the inspector.
+
 ## How the simulation works
 
 The signal cycle has six timed stages: 19 seconds of north/south green, 4 seconds of north/south amber, 1.5 seconds of all-red clearance, 19 seconds of east/west green, 4 seconds of east/west amber, and 1.5 seconds of all-red clearance. During each stage, `signalStates` is updated for all four directions from the same phase definition. The crossing axes do not receive green at the same time.
@@ -59,6 +77,14 @@ Each direction has a fixed, staggered arrival interval. New vehicles are appende
 Waiting counts reflect vehicles stopped before the junction. Density uses the number of vehicles remaining on an approach: LOW is 0–1, MEDIUM is 2–3, and HIGH is 4. These documented thresholds are intended for this model rather than representing an official road-capacity standard.
 
 Start, pause, resume, and reset control the simulation loop. While paused, no simulation time advances and no signals, arrivals, or vehicles update. The speed selector scales simulated elapsed time. Manual injection adds a vehicle to the chosen approach unless the queue limit has been reached. Reset clears the queues and completed counts and restores the original signal phase and arrival schedule.
+
+## Using the simulator
+
+1. Select **Start** to begin the clock, signal cycle, and staggered vehicle arrivals.
+2. Observe the active movement and phase countdown. Compare the lights in the intersection with each approach's signal state.
+3. Change the speed to alter simulated time, or choose an approach and select **Add vehicle** to inject traffic. The per-approach queue limit is four.
+4. Select **Pause** to freeze all simulation updates and **Resume** to continue from that state. Select **Reset** to clear all vehicles and throughput counts and return the clock and cycle to their initial values.
+5. Compare the approach measurements and Array inspector. The inspector's indices always map to 00 NORTH, 01 EAST, 02 SOUTH, and 03 WEST.
 
 ## Benefits and limitations
 

@@ -220,6 +220,49 @@
         </aside>
       </section>
 
+      <section class="field-guide" aria-labelledby="guide-title">
+        <div class="guide-heading">
+          <div>
+            <p class="eyebrow">A SHORT FIELD GUIDE <span class="eyebrow-rule"></span> MODEL NOTES</p>
+            <h2 id="guide-title">How to read the <em>flow</em></h2>
+          </div>
+          <p class="guide-lede">Follow one signal cycle, then watch the same direction indices carry each vehicle from arrival to clearance.</p>
+        </div>
+        <div class="guide-columns">
+          <article class="guide-panel" aria-labelledby="use-guide-title">
+            <div class="guide-panel-heading">
+              <span class="section-index">A</span>
+              <h3 id="use-guide-title">Using the simulator</h3>
+            </div>
+            <ol class="guide-steps">
+              <li><b>Start</b><span>Begins the clock and timed arrivals. Vehicles appear at staggered intervals.</span></li>
+              <li><b>Observe</b><span>North and south share a green phase, followed by amber and a brief all-red clearance. East and west then take their turn.</span></li>
+              <li><b>Adjust</b><span>Choose a speed to scale simulation time, or select an approach and add a vehicle. Each approach is limited to four vehicles.</span></li>
+              <li><b>Pause / resume / reset</b><span>Pause freezes the model; resume continues it. Reset clears time, queues, and completed counts.</span></li>
+              <li><b>Compare</b><span>Read the approach totals and array inspector together. Index 00 always means NORTH, 01 EAST, 02 SOUTH, and 03 WEST.</span></li>
+            </ol>
+          </article>
+
+          <article class="guide-panel array-guide" aria-labelledby="array-guide-title">
+            <div class="guide-panel-heading">
+              <span class="section-index">B</span>
+              <h3 id="array-guide-title">Why indexed arrays fit</h3>
+            </div>
+            <p class="guide-copy">There are four fixed approaches with the same kinds of measurements. Keeping those values at a shared index lets one loop apply a signal phase to every approach instead of maintaining four separate sets of code.</p>
+            <pre class="guide-code"><code>for (let direction = 0;
+     direction &lt; DIRECTIONS.length;
+     direction += 1) {
+  signalStates[direction] =
+    phase.green.includes(direction)
+      ? phase.state
+      : SIGNAL.RED;
+}</code></pre>
+            <p class="guide-copy">The vehicle queues are arrays of vehicle objects—one queue per approach. Their current positions and speeds produce the waiting count and density; completed vehicles increment the matching <code>vehiclesPassed</code> index. The inspector displays these live values, not an example dataset.</p>
+            <p class="guide-caution"><span aria-hidden="true">i</span> Arrays suit the fixed, ordered directions. Each vehicle is an object because it needs several properties, such as position, speed, and wait time.</p>
+          </article>
+        </div>
+      </section>
+
       <footer class="page-footer">
         <span>SIGNAL <span class="footer-separator">/</span> INTERSECTION RESEARCH SERIES</span>
         <span>DETERMINISTIC ARRIVALS <span class="footer-separator">·</span> STRAIGHT-THROUGH TRAFFIC MODEL</span>

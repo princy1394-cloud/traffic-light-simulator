@@ -36,9 +36,15 @@ Alternatively, open the project folder in VS Code and select **Go Live** with th
 - **Simulation speed** scales simulated time relative to real time (0.5×, 1×, 2×, or 4×).
 - **Inject vehicle** adds one vehicle to the selected approach unless its queue has reached the four-vehicle limit.
 
+## How to use the model
+
+Select **Start** and watch the phase label, countdown, and signal lamps. North/south receive a shared green, then amber and an all-red clearance; east/west follow. Arrivals join the queues at staggered intervals. Use **Pause** and **Resume** to inspect a moment without advancing simulation time, or **Reset** to start over. Try changing speed or injecting a vehicle into different approaches, then compare the live approach panel with the array inspector.
+
 ## How arrays are used
 
 `DIRECTIONS`, `signalStates`, `vehiclesByDirection`, `waitingVehicles`, `vehiclesPassed`, and `trafficDensity` use matching direction indices: 0 = north, 1 = east, 2 = south, and 3 = west. `vehiclesByDirection[index]` stores the actual vehicle objects; the other indexed arrays track signal, queue, completed traffic, and density. The inspector renders these state arrays rather than sample values.
+
+This fixed four-direction model is a good fit for indexed arrays: a single loop can update the signal state or calculate the queue data for each approach using the same index. For example, `signalStates[direction]` is set by checking whether that index is in the active phase's green list. The vehicle queues themselves are arrays of objects because each vehicle needs related fields such as position, speed, and wait time.
 
 Density is calculated from the number of vehicles still on an approach: LOW for 0–1, MEDIUM for 2–3, and HIGH for 4. Queue length is limited to four vehicles per approach to keep the queues visible and separated in the simplified intersection view.
 

@@ -43,6 +43,7 @@
     resume: document.getElementById("resume-button"),
     reset: document.getElementById("reset-button"),
     speed: document.getElementById("speed-select"),
+    themeToggle: document.getElementById("theme-toggle"),
     directionSelect: document.getElementById("direction-select"),
     addVehicle: document.getElementById("add-vehicle-button"),
     addHint: document.getElementById("add-vehicle-hint"),
@@ -65,6 +66,16 @@
   let animationFrame = 0;
   let renderAccumulator = 0;
   const vehiclesById = new Map();
+
+  function setTheme(theme) {
+    const isDark = theme === "dark";
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    const nextThemeLabel = isDark ? "light" : "dark";
+    elements.themeToggle.setAttribute("aria-label", `Switch to ${nextThemeLabel} theme`);
+    elements.themeToggle.setAttribute("aria-pressed", String(isDark));
+    elements.themeToggle.title = `Switch to ${nextThemeLabel} theme`;
+    document.querySelector('meta[name="theme-color"]').content = isDark ? "#202522" : "#fbfaf6";
+  }
 
   function formatClock(seconds) {
     const wholeSeconds = Math.floor(seconds);
@@ -338,7 +349,14 @@
   elements.reset.addEventListener("click", reset);
   elements.addVehicle.addEventListener("click", () => addVehicle(Number(elements.directionSelect.value)));
   elements.speed.addEventListener("change", render);
+  elements.themeToggle.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    localStorage.setItem("signal-theme", nextTheme);
+    setTheme(nextTheme);
+  });
 
+  const savedTheme = localStorage.getItem("signal-theme");
+  setTheme(savedTheme === "dark" ? "dark" : "light");
   applyPhase();
   render();
 })();

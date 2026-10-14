@@ -8,7 +8,8 @@ SIGNAL is a small, client-side four-way intersection model built with HTML, CSS,
 - A safe two-axis signal cycle: north/south green, amber, all-red clearance, east/west green, amber, and all-red clearance.
 - Gradual vehicle arrivals, queues, following distance, red-light stopping, and completed-vehicle counts.
 - Live overview, per-approach measurements, queue indicators, and an array inspector linked to simulation state.
-- Start, pause, resume, reset, four simulation speeds, and manual vehicle injection by direction.
+- Start, pause, resume, reset, four simulation speeds, manual vehicle injection by direction, and a light/dark theme toggle.
+- A brighter ivory light theme and a dark theme that is remembered in the browser.
 - Responsive layout and keyboard-visible focus styles.
 
 ## Project files
